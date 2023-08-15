@@ -26,14 +26,11 @@ We didn't want to agree with it so we created this library which transforms comp
 
 ```sh
 #Linux/macOS
-python3 -m pip install -U team4958_customs
+python3 -m pip install team4958_customs
 
 #Windows
-py -3 -m pip install -U team4958_customs
+py -3 -m pip install team4958_customs
 ```
-
-
-
 
 ## License
 
@@ -42,9 +39,3 @@ Distributed under the MIT License. See [LICENSE](https://github.com/4958dev/team
 ## Authors
 
 * **arti404** - *laziest dev ever* - [arti404](https://github.com/arti404) - *made everything*
-
-## Acknowledgements
-
-* []()
-* []()
-* []()
