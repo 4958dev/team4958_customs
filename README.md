@@ -1,6 +1,6 @@
 <br/>
 <p align="center">
-  <h3 align="center">team4958 CUSTOMS</h3>
+  <h1 align="center">team4958 CUSTOMS</h1>
 
   <p align="center">
     some life-simplifying python tools for some lazy devs from some lazy devs
