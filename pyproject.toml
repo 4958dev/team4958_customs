@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "team4958-customs"
-version = "0.1.1"
+version = "0.1.2"
 description = "some life-simplifying python tools for some lazy devs from some lazy devs"
 authors = ["arti404 <113468982+arti404@users.noreply.github.com>"]
 license = "MIT"

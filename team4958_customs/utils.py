@@ -6,12 +6,14 @@ import pathlib
 
 __all__ = [
     'MISSING',
-    'ROOT'
+    'ROOT',
+    'MAXINT'
 ]
 
 
 
 ROOT = pathlib.Path(pathlib.Path.cwd())
+MAXINT = 2147483647
 
 
 
@@ -33,6 +35,8 @@ MISSING: Any = _MissingSentinel()
 
 
 def _yesornot(text):
+    from sys import setrecursionlimit as recurlim
+    recurlim(MAXINT)
     """
     repeats question until user answers `yes` or `no`
     """

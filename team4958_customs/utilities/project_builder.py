@@ -6,7 +6,7 @@ if you are tired of recreating same project structures again and again
 
 
 from team4958_customs.utilities.assets.builder_presets import *
-from team4958_customs.utils import ROOT, MISSING, _yesornot
+from team4958_customs.utils import ROOT, MISSING, MAXINT, _yesornot
 
 import pathlib
 from pathlib import Path
@@ -50,6 +50,8 @@ class _Check:
 
 
 def _projectname():
+    from sys import setrecursionlimit as recurlim
+    recurlim(MAXINT)
     name = input("give your project a proper name: ")
     restricted = _Check.sym_presence(name, RESTRICTED)
     unrecommended = _Check.sym_presence(name, UNRECOMMENDED)
@@ -67,6 +69,49 @@ def _projectname():
             return _projectname()
     else:
         return name
+
+
+
+def _fromdict(obj:dict, path=MISSING):
+        """
+        `NEVER FUCKING CALL THIS INSIDE YOUR CODE`
+        ------------
+        \n
+        this will spawn your whole structure directly in current work directory!\n
+        `use 'fromdict' method instead`\n
+        --------\n
+        builds a project structure from dict
+        ----
+        \n
+        -------\n
+        example_dict = {
+            'folder_name':{
+                #feel free to make as much substructures as you need
+            },
+            'filename.extension':['line1', 'line2', 'line3', etc.],
+            'filename2.extension':'any text to put inside the file just as string'
+        }
+        """
+        if path is MISSING:
+            path = ROOT
+        for (key, val) in obj.items():
+            if type(val) is dict:
+                try:
+                    os.mkdir(pathlib.Path(path, key))
+                except FileExistsError:
+                    pass
+                newpath = pathlib.Path(path, key)
+                _fromdict(val, newpath)
+            elif type(val) is list or type(val) is str:
+                with open(pathlib.Path(path, key), 'w') as f:
+                    if type(val) is list:
+                        if val!=[]:
+                            for line in val:
+                                f.writelines(line)
+                    else:
+                        f.write(val)
+            else:
+                print(f'"{key}" type not specified as file or folder, skipping...')
 
 
 
@@ -91,58 +136,33 @@ class Build:
         ---------\n
         license_file: whether you wish to create a `LICENSE` file in your project's root directory (will be empty)
         """
-        if name is MISSING and create_subfolder==True:
-            name = _projectname()
-        os.mkdir(Path(ROOT, name, 'src'))
-        with open(Path(ROOT, name, 'main.py'), 'w') as f:
+        if create_subfolder == False:
+            proj_path = ROOT
+        else:
+            if name is MISSING:
+                name = _projectname()
+                try:
+                    os.mkdir(Path(ROOT, name))
+                except FileExistsError:
+                    pass
+                proj_path = Path(ROOT, name)
+            else:
+                try:
+                    os.mkdir(Path(ROOT, name))
+                except FileExistsError:
+                    pass
+                proj_path = Path(ROOT, name)
+        with open(Path(proj_path, 'main.py'), 'w') as f:
             pass
         if readme:
-            with open(Path(ROOT, name, 'README.md'), 'w') as f:
+            with open(Path(proj_path, 'README.md'), 'w') as f:
                 pass
         if requirements:
-            with open(Path(ROOT, name, 'requirements.txt'), 'w') as f:
+            with open(Path(proj_path, 'requirements.txt'), 'w') as f:
                 f.write("team4958_customs")
         if license_file:
-            with open(Path(ROOT, name, 'LICENSE'), 'w') as f:
+            with open(Path(proj_path, 'LICENSE'), 'w') as f:
                 pass
-    
-    def _fromdict(obj:dict, path=MISSING):
-        """
-        `NEVER FUCKING CALL THIS INSIDE YOUR CODE`
-        ------------
-        \n
-        this will spawn your whole structure directly in current work directory!\n
-        `use 'fromdict' method instead`\n
-        --------\n
-        builds a project structure from dict
-        ----
-        \n
-        -------\n
-        example_dict = {
-            'folder_name':{
-                #feel free to make as much substructures as you need
-            },
-            'filename.extension':['line1', 'line2', 'line3', etc.],
-            'filename2.extension':'any text to put inside the file just as string'
-        }
-        """
-        if path is MISSING:
-            path = ROOT
-        for (key, val) in obj.items():
-            if type(val) is dict:
-                os.mkdir(pathlib.Path(path, key))
-                newpath = pathlib.Path(path, key)
-                Build._fromdict(val, newpath)
-            elif type(val) is list or type(val) is str:
-                with open(pathlib.Path(path, key), 'w') as f:
-                    if type(val) is list:
-                        if val!=[]:
-                            for line in val:
-                                f.writelines(line)
-                    else:
-                        f.write(val)
-            else:
-                print(f'"{key}" type not specified as file or folder, skipping...')
     
     def fromdict(preset:dict, name: str=MISSING, create_subfolder=True):
         """
@@ -163,13 +183,23 @@ class Build:
         name: your project's name (required and has its point only if 'create_subfolder' is True)\n
         create_subfolder: whether you wish to create everything inside a subfolder\n
         """
-        if name is MISSING and create_subfolder==True:
-            name = _projectname()
-            os.mkdir(Path(ROOT, name))
-            proj_path = Path(ROOT, name)
-        else:
+        if create_subfolder == False:
             proj_path = ROOT
-        Build._fromdict(preset, path=proj_path)
+        else:
+            if name is MISSING:
+                name = _projectname()
+                try:
+                    os.mkdir(Path(ROOT, name))
+                except FileExistsError:
+                    pass
+                proj_path = Path(ROOT, name)
+            else:
+                try:
+                    os.mkdir(Path(ROOT, name))
+                except FileExistsError:
+                    pass
+                proj_path = Path(ROOT, name)
+        _fromdict(preset, path=proj_path)
     
     def deafult(name: str=MISSING, create_subfolder=True):
         """
@@ -180,27 +210,47 @@ class Build:
         name: your project's name (required and has its point only if 'create_subfolder' is True)\n
         create_subfolder: whether you wish to create everything inside a subfolder\n
         """
-        if name is MISSING and create_subfolder==True:
-            name = _projectname()
-            os.mkdir(Path(ROOT, name))
-            proj_path = Path(ROOT, name)
-        else:
+        if create_subfolder == False:
             proj_path = ROOT
-        Build._fromdict(deafult_preset, path=proj_path)
+        else:
+            if name is MISSING:
+                name = _projectname()
+                try:
+                    os.mkdir(Path(ROOT, name))
+                except FileExistsError:
+                    pass
+                proj_path = Path(ROOT, name)
+            else:
+                try:
+                    os.mkdir(Path(ROOT, name))
+                except FileExistsError:
+                    pass
+                proj_path = Path(ROOT, name)
+        _fromdict(deafult_preset, path=proj_path)
         
-    # def disnake_bot(name: str=MISSING, create_subfolder=True):
-    #     """
-    #     builds a disnake bot project structure from built-in template
-    #     ----
-    #     \n
-    #     ---------\n
-    #     name: your project's name (required and has its point only if 'create_subfolder' is True)\n
-    #     create_subfolder: whether you wish to create everything inside a subfolder\n
-    #     """
-    #     if name is MISSING and create_subfolder==True:
-    #         name = _projectname()
-    #         os.mkdir(Path(ROOT, name))
-    #         proj_path = Path(ROOT, name)
-    #     else:
-    #         proj_path = ROOT
-    #     Build._fromdict(disnake_preset, path=proj_path)
+    def disnake_bot(name: str=MISSING, create_subfolder=True):
+        """
+        builds a disnake bot project structure from built-in template
+        ----
+        \n
+        ---------\n
+        name: your project's name (required and has its point only if 'create_subfolder' is True)\n
+        create_subfolder: whether you wish to create everything inside a subfolder\n
+        """
+        if create_subfolder == False:
+            proj_path = ROOT
+        else:
+            if name is MISSING:
+                name = _projectname()
+                try:
+                    os.mkdir(Path(ROOT, name))
+                except FileExistsError:
+                    pass
+                proj_path = Path(ROOT, name)
+            else:
+                try:
+                    os.mkdir(Path(ROOT, name))
+                except FileExistsError:
+                    pass
+                proj_path = Path(ROOT, name)
+        _fromdict(disnake_preset, path=proj_path)
