@@ -132,7 +132,7 @@ class Build:
             if type(val) is dict:
                 os.mkdir(pathlib.Path(path, key))
                 newpath = pathlib.Path(path, key)
-                Build.fromdict(val, newpath)
+                Build._fromdict(val, newpath)
             elif type(val) is list or type(val) is str:
                 with open(pathlib.Path(path, key), 'w') as f:
                     if type(val) is list:
@@ -169,7 +169,7 @@ class Build:
             proj_path = Path(ROOT, name)
         else:
             proj_path = ROOT
-        Build._fromdict(preset, proj_path)
+        Build._fromdict(preset, path=proj_path)
     
     def deafult(name: str=MISSING, create_subfolder=True):
         """
