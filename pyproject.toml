@@ -1,22 +1,16 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[project]
-name = "4958customs"
-version = "0.0.1"
-authors = [
-  { name="arti404", email="chelp.rostoi@yandex.ru" },
-]
-description = "some life-simplifying python tools and utilities for some lazy devs from some lazy devs"
+[tool.poetry]
+name = "team4958-customs"
+version = "0.1.0"
+description = "some life-simplifying python tools for some lazy devs from some lazy devs"
+authors = ["arti404 <113468982+arti404@users.noreply.github.com>"]
+license = "MIT"
 readme = "README.md"
-requires-python = ">=3.8"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-]
+packages = [{include = "team4958_customs"}]
 
-[project.urls]
-"Homepage" = "https://github.com/4958dev/team4958_customs"
-"Bug Tracker" = "https://github.com/4958dev/team4958_customs/issues"
+[tool.poetry.dependencies]
+python = "^3.7"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
