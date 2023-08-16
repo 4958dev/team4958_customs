@@ -5,7 +5,7 @@ if you are tired of recreating same project structures again and again
 
 
 
-from team4958_customs.utilities.assets.builder_presets import *
+from team4958_customs.utilities.assets import builder_presets
 from team4958_customs.utils import ROOT, MISSING, MAXINT, _yesornot
 
 import pathlib
@@ -107,7 +107,7 @@ def _fromdict(obj:dict, path=MISSING):
                     if type(val) is list:
                         if val!=[]:
                             for line in val:
-                                f.writelines(line)
+                                f.write(f'{line}\n')
                     else:
                         f.write(val)
             else:
@@ -226,7 +226,7 @@ class Build:
                 except FileExistsError:
                     pass
                 proj_path = Path(ROOT, name)
-        _fromdict(deafult_preset, path=proj_path)
+        _fromdict(builder_presets.DEAFULT, path=proj_path)
         
     def disnake_bot(name: str=MISSING, create_subfolder=True):
         """
@@ -253,4 +253,4 @@ class Build:
                 except FileExistsError:
                     pass
                 proj_path = Path(ROOT, name)
-        _fromdict(disnake_preset, path=proj_path)
+        _fromdict(builder_presets.DISNAKE, path=proj_path)
