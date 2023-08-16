@@ -90,6 +90,8 @@ class MySQLqueries():
             finally:
                 cursor.close()
                 conn.close()
+            if res is not MISSING:
+                res = _Clear.string(res)
             return res
         else:
             return
@@ -115,6 +117,8 @@ class MySQLqueries():
             finally:
                 cursor.close()
                 conn.close()
+            if res is not MISSING:
+                res = _Clear.listing(res)
             return res
         else:
             return
@@ -335,3 +339,35 @@ class BasicAction():
                     print("passing an unhandled exception:")
                     traceback.print_exc()
                     return
+
+
+
+class _Clear:
+    """MySQL response clearer"""
+
+    def string(obj):
+        """clears response from `fetchone`"""
+        chars_to_remove = ["(", ")", ",", "'"]
+        element = str()
+        try:
+            for element in obj:
+                for char in chars_to_remove:
+                    element = str(element)
+                    element = element.replace(char, "")
+        except:
+            pass
+        return element
+    
+    def listing(obj):
+        """clears response from `fetchall`"""
+        chars_to_remove = ["(", ")", ",", "'"]
+        clear_list = []
+        try:
+            for element in obj:
+                for char in chars_to_remove:
+                    element = str(element)
+                    element = element.replace(char, "")
+                clear_list.append(element)
+        except:
+            pass
+        return clear_list

@@ -10,5 +10,6 @@ from team4958_customs.tools import sql
 
 
 __all__ = [
-    'sql'
+    'sql',
+    'asyncs'
 ]
