@@ -254,3 +254,15 @@ class Build:
                     pass
                 proj_path = Path(ROOT, name)
         _fromdict(builder_presets.DISNAKE, path=proj_path)
+
+
+
+class Package:
+    def __init__(self):
+        pass
+
+    def _pack():
+        pass
+    
+    def _unpack():
+        pass
