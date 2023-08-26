@@ -169,7 +169,12 @@ class Administration():
         add_tables: if you need to create some tables in this db (you probably do, right?..)\n
         tables and their structures `must be specified must be specified in 'dbconfig' dict which is being given as a class arg`
         """
-        conn = BasicAction().connect(self.dbconfig, root=True if add_users else False, rootconfig=self.mysql_config)
+        if add_users:
+            conn = BasicAction().connect(self.dbconfig, root=True, rootconfig=self.mysql_config)
+        else:
+            conn = BasicAction().connect(self.dbconfig, rootconfig=self.mysql_config)
+            if not conn:
+                conn = BasicAction().connect(self.dbconfig, root=True, rootconfig=self.mysql_config)
         if conn:
             cursor=conn.cursor()
             try:
@@ -311,7 +316,7 @@ class BasicAction():
                 return connection_db
             except sqlErr as db_connection_error:
                 log.error(db_connection_error, exc_info=True)
-                print("Возникла ошибка MySQL: ", db_connection_error)
+                #print("Возникла ошибка MySQL: ", db_connection_error)
                 return
             except Exception as err:
                 log.error(f"passing an unhandled exception:\n{err}", exc_info=True)
@@ -332,7 +337,7 @@ class BasicAction():
                     return connection_db
                 except sqlErr as db_connection_error:
                     log.error(db_connection_error, exc_info=True)
-                    print("Возникла ошибка MySQL: ", db_connection_error)
+                    #print("Возникла ошибка MySQL: ", db_connection_error)
                     return
                 except Exception as err:
                     log.error(f"passing an unhandled exception:\n{err}", exc_info=True)
