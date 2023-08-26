@@ -26,10 +26,10 @@ We didn't want to agree with it so we created this library which transforms comp
 
 ```sh
 #Linux/macOS
-python3 -m pip install team4958_customs
+python3 -m pip install team4958-customs
 
 #Windows
-py -3 -m pip install team4958_customs
+py -3 -m pip install team4958-customs
 ```
 
 ## License
