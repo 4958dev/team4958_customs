@@ -30,18 +30,12 @@ class Asyncio:
     """
     simplyfies work with `asyncio` which prvides you ability to call coroutines without 'await' expression\n
     -------\n
-    loop: asyncio event loop to run your coroutine (highly recommended to specify for every instance uses 'run_threaded' method, but still optional)\n
-    to set assign `asyncio.get_event_loop()` to a variable and give it
+    loop: asyncio event loop to run your coroutine (highly recommended to specify for every instance uses 'run_threaded' method, but still optional); to set assign `asyncio.get_event_loop()` to a variable and give it\n
+    pass_exc: whether you want to pass all catched exceptions by printing (and optionally logging) their tracebacks
     """
-    def __init__(self, loop:asyncio.AbstractEventLoop=MISSING, **kwargs):
+    def __init__(self, loop:asyncio.AbstractEventLoop=MISSING, pass_exc: bool=MISSING):
         self.loop = loop
-        if 'pass_exceptions' in kwargs.keys():
-            if type(kwargs['pass_exceptions']) is bool:
-                self.pass_exceptions = kwargs['pass_exceptions']
-            else:
-                self.pass_exceptions = MISSING
-        else:
-            self.pass_exceptions = MISSING
+        self.pass_exceptions = pass_exc
         
     def run(self, coro, pass_exceptions: bool=MISSING) -> Any:
         """
@@ -49,7 +43,7 @@ class Asyncio:
         can return coroutine result\n
         don't use 'await' expression\n
         -------\n
-        pass_exceptions: whether you want to pass all catched exceptions with printing their tracebacks
+        pass_exceptions: whether you want to pass all catched exceptions by printing (and optionally logging) their tracebacks
         """
         if not coroutines.iscoroutine(coro):
             raise TypeError("A coroutine object is required! To run a non-coro function use 'Threading' subclass instead.")
@@ -106,21 +100,19 @@ class Asyncio:
                 loop = DEAFULT_LOOP
         if loop.is_running:
             loop.stop()
+
+
     
 class Threading:
     """
     simplyfies work with `threading` which prvides you ability to use non-coroutines asyncronously\n
     `functions threaded using this class are impossible to stop from code before they finish or stop by themselves!`\n
-    also it's impossible to return anything from this
+    also it's impossible to return anything from this\n
+    ----------\n
+    pass_exc: whether you want to pass all catched exceptions by printing (and optionally logging) their tracebacks
     """
-    def __init__(self, **kwargs):
-        if 'pass_exceptions' in kwargs.keys():
-            if type(kwargs['pass_exceptions']) is bool:
-                self.pass_exceptions = kwargs['pass_exceptions']
-            else:
-                self.pass_exceptions = MISSING
-        else:
-            self.pass_exceptions = MISSING
+    def __init__(self, pass_exc: bool=MISSING):
+        self.pass_exceptions = pass_exc
 
     def run(self, func, args: Iterable=MISSING, pass_exceptions: bool=MISSING):
         """
@@ -129,7 +121,7 @@ class Threading:
         ---------\n
         func: your non-coroutine function (give only a function name here)\n
         args: arguments for function as `(arg1, arg2, ... ,)`\n
-        pass_exceptions: whether you want to pass all catched exceptions with printing their tracebacks
+        pass_exceptions: whether you want to pass all catched exceptions by printing (and optionally logging) their tracebacks
         """
         if coroutines.iscoroutine(func):
             raise TypeError("A coroutine object is unacceptable! To run a coroutine function use 'Asyncio' subclass instead.")

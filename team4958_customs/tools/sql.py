@@ -64,7 +64,9 @@ class MySQLqueries():
                 cursor.execute(sql_query)
                 conn.commit()
             except sqlErr as err:
-                log.error(err, exc_info=True)
+                log.error(f"failed commitable query: {sql_query}\n{err}", exc_info=True)
+                print(f"failed commitable query: {sql_query}")
+                traceback.print_exc()
             finally:
                 cursor.close()
                 conn.close()
@@ -72,7 +74,7 @@ class MySQLqueries():
     def fetch_one(self, sql_query:str, alt_user: bool=MISSING):
         """
         not commit-requiring query\n
-        fetchone as output\n
+        fetchone as output (returns tuple)\n
         -----\n
         alt_user: specify if you need to set for this call only
         """
@@ -86,12 +88,12 @@ class MySQLqueries():
                 cursor.execute(sql_query)
                 res = cursor.fetchone()
             except sqlErr as err:
-                log.error(err, exc_info=True)
+                log.error(f"failed fetchable query: {sql_query}\n{err}", exc_info=True)
+                print(f"failed fetchable query: {sql_query}")
+                traceback.print_exc()
             finally:
                 cursor.close()
                 conn.close()
-            if res is not MISSING:
-                res = _Clear.string(res)
             return res
         else:
             return
@@ -99,7 +101,7 @@ class MySQLqueries():
     def fetch_all(self, sql_query:str, alt_user: bool=MISSING):
         """
         not commit-requiring query\n
-        fetchall as output\n
+        fetchall as output (returns list of tuples)\n
         -----\n
         alt_user: specify if you need to set for this call only
         """
@@ -113,12 +115,40 @@ class MySQLqueries():
                 cursor.execute(sql_query)
                 res = cursor.fetchall()
             except sqlErr as err:
-                log.error(err, exc_info=True)
+                log.error(f"failed fetchable query: {sql_query}\n{err}", exc_info=True)
+                print(f"failed fetchable query: {sql_query}")
+                traceback.print_exc()
             finally:
                 cursor.close()
                 conn.close()
-            if res is not MISSING:
-                res = _Clear.listing(res)
+            return res
+        else:
+            return
+    
+    def fetch_many(self, sql_query:str, size:int, alt_user: bool=MISSING):
+        """
+        not commit-requiring query\n
+        fetchmany as output (returns list of tuples)\n
+        -----\n
+        size: amount of elements to fetch from database\n
+        alt_user: specify if you need to set for this call only
+        """
+        if alt_user is MISSING:
+            alt_user=self.alt_user
+        conn = BasicAction().connect(self.dbconfig, secondary=alt_user)
+        if conn:
+            cursor = conn.cursor()
+            res = MISSING
+            try:
+                cursor.execute(sql_query)
+                res = cursor.fetchmany(size)
+            except sqlErr as err:
+                log.error(f"failed fetchable query: {sql_query}\n{err}", exc_info=True)
+                print(f"failed fetchable query: {sql_query}")
+                traceback.print_exc()
+            finally:
+                cursor.close()
+                conn.close()
             return res
         else:
             return
@@ -172,7 +202,7 @@ class Administration():
         if add_users:
             conn = BasicAction().connect(self.dbconfig, root=True, rootconfig=self.mysql_config)
         else:
-            conn = BasicAction().connect(self.dbconfig, rootconfig=self.mysql_config)
+            conn = BasicAction().connect(self.dbconfig)
             if not conn:
                 conn = BasicAction().connect(self.dbconfig, root=True, rootconfig=self.mysql_config)
         if conn:
@@ -181,14 +211,25 @@ class Administration():
                 cursor.execute(f"CREATE DATABASE {self.dbconfig['database']}")
                 conn.commit()
             except sqlErr as err:
-                log.error(err, exc_info=True)
-                print(err)
+                log.error(f"failed creating database: {self.dbconfig['database']}\n{err}", exc_info=True)
+                print(f"failed creating database: {self.dbconfig['database']}")
+                traceback.print_exc()
+            except Exception as err:
+                log.error(f"unexpected error while creating database\n{err}", exc_info=True)
+                print(f"unexpected error while creating database")
+                traceback.print_exc()
             cursor.execute(f"USE {self.dbconfig['database']}")
             conn.commit()
             if add_tables:
-                self.create_tables(connection=conn)
+                try:
+                    self.create_tables(connection=conn)
+                except:
+                    pass
             if add_users:
-                self.create_users(connection=conn)
+                try:
+                    self.create_users(connection=conn)
+                except:
+                    pass
     
     def create_users(self, connection=MISSING):
         """
@@ -211,8 +252,13 @@ class Administration():
                 cursor.execute(f"FLUSH PRIVILEGES")
                 conn.commit()
             except sqlErr as err:
-                log.error(err, exc_info=True)
-                print(err)
+                log.error(f"failed creating user: {self.dbconfig['user']}\n{err}", exc_info=True)
+                print(f"failed creating user: {self.dbconfig['user']}")
+                traceback.print_exc()
+            except Exception as err:
+                log.error(f"unexpected error while creating user\n{err}", exc_info=True)
+                print(f"unexpected error while creating user")
+                traceback.print_exc()
             try:
                 cursor.execute(f"CREATE USER '{self.dbconfig['user2']}'@'{self.dbconfig['host']}' IDENTIFIED BY '{self.dbconfig['passwd2']}'")
                 conn.commit()
@@ -221,8 +267,13 @@ class Administration():
                 cursor.execute(f"FLUSH PRIVILEGES")
                 conn.commit()
             except sqlErr as err:
-                log.error(err, exc_info=True)
-                print(err)
+                log.error(f"failed creating user: {self.dbconfig['user2']}\n{err}", exc_info=True)
+                print(f"failed creating user: {self.dbconfig['user2']}")
+                traceback.print_exc()
+            except Exception as err:
+                log.error(f"unexpected error while creating user\n{err}", exc_info=True)
+                print(f"unexpected error while creating user")
+                traceback.print_exc()
             cursor.close()
             if connection is MISSING:
                 conn.close()
@@ -261,8 +312,13 @@ class Administration():
                     cursor.execute(f"CREATE TABLE {table}")
                     conn.commit()
                 except sqlErr as err:
-                    log.error(err, exc_info=True)
-                    print(err)
+                    log.error(f"{database} - failed creating table: {table}\n{err}", exc_info=True)
+                    print(f"{database} - failed creating table: {table}")
+                    traceback.print_exc()
+                except Exception as err:
+                    log.error(f"unexpected error while creating database\n{err}", exc_info=True)
+                    print(f"unexpected error while creating database")
+                    traceback.print_exc()
             if connection is MISSING:
                 cursor.close()
                 conn.close()
