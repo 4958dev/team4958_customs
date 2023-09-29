@@ -141,13 +141,13 @@ class MySQLqueries():
             res = MISSING
             try:
                 cursor.execute(sql_query)
-                res = cursor.fetchmany(size)
+                res = cursor.fetchmany(size=size)
             except sqlErr as err:
                 log.error(f"failed fetchable query: {sql_query}\n{err}", exc_info=True)
                 print(f"failed fetchable query: {sql_query}")
                 traceback.print_exc()
             finally:
-                cursor.close()
+                # cursor.close()
                 conn.close()
             return res
         else:
