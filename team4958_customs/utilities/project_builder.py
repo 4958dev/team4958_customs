@@ -259,10 +259,10 @@ class Build:
 
 class Package:
     def __init__(self):
-        pass
+        ...
 
     def _pack():
-        pass
+        ...
     
     def _unpack():
-        pass
+        ...

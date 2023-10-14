@@ -51,8 +51,7 @@ class MySQLqueries():
         commit-requiring query\n
         has no output\n
         -----\n
-        sql_query: MySQL query to
-        ------\n
+        sql_query: MySQL query to execute\n
         alt_user: specify if you need to set for this call only
         """
         if alt_user is MISSING:
