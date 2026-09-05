@@ -1,4 +1,4 @@
-# team4958_customs
+# team4958_customs by arti404
 
 A small collection of reusable Python helpers I originally built to reduce repetitive code in my early projects.
 
